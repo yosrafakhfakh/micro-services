@@ -1,0 +1,76 @@
+
+services:
+  config-service:
+    build: ./config-service
+    ports:
+      - "5555:5555"
+    volumes:
+      - ${HOME}/cloud-conf:/root/cloud-conf
+    networks:
+      - spring-network
+  eureka-discoveryservice:
+    build: ./eureka-discoveryservice
+    ports:
+      - "8761:8080"
+    volumes:
+      - ${HOME}/cloud-conf:/root/cloud-conf
+    networks:
+      - spring-network
+
+  gatewayservice:
+    build: ./gatewayservice
+    ports:
+      - "8888:8080"
+    volumes:
+      - ${HOME}/cloud-conf:/root/cloud-conf
+    networks:
+      - spring-network 
+
+  produit-service:
+    build: ./produit-service
+    ports:
+      - "8082:8080"
+    volumes:
+      - ${HOME}/cloud-conf:/root/cloud-conf
+    networks:
+      - spring-network
+
+  client-service:
+    build: ./client-service
+    ports:
+      - "8081:8080"
+    volumes:
+      - ${HOME}/cloud-conf:/root/cloud-conf
+    networks:
+      - spring-network
+  
+  factureservice:
+    build: ./factureservice
+    ports:
+      - "8083:8080"
+    volumes:
+      - ${HOME}/cloud-conf:/root/cloud-conf
+    networks:
+      - spring-network
+
+  reglement-service:
+    build: ./reglement-service
+    ports:
+      - "8084:8080"
+    volumes:
+      - ${HOME}/cloud-conf:/root/cloud-conf
+    networks:
+      - spring-network
+
+  authentificationservice:
+    build: ./authentificationservice
+    ports:
+      - "8089:8080"
+    volumes:
+      - ${HOME}/cloud-conf:/root/cloud-conf
+    networks:
+      - spring-network
+  
+networks:
+  spring-network:
+    driver: bridge
