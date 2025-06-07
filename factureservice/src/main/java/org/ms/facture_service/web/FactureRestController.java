@@ -26,6 +26,11 @@ public class FactureRestController {
 		this.produitServiceClient = produitServiceClient;
 	}
 
+	  @GetMapping(path = "/factures")
+	    public List<Facture> getAllFactures() {
+	        return factureRepository.findAll();
+	    }
+
 	@GetMapping(path = "/full-facture/{id}")
 	public Facture getFacture(@PathVariable(name = "id") Long id) {
 		Facture facture = factureRepository.findById(id).get();
