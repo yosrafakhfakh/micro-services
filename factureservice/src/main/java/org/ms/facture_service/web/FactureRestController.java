@@ -7,8 +7,10 @@ import org.ms.facture_service.model.Client;
 import org.ms.facture_service.model.Produit;
 import org.ms.facture_service.repository.FactureLigneRepository;
 import org.ms.facture_service.repository.FactureRepository;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
@@ -35,6 +37,7 @@ public class FactureRestController {
 	    public String home() {
 	        return "Bienvenue sur le service de facture";
 	    }
+	  
 
 	@GetMapping(path = "/full-facture/{id}")
 	public Facture getFacture(@PathVariable(name = "id") Long id) {
@@ -62,5 +65,29 @@ public class FactureRestController {
 	    });
 	    return factures;
 	}
+	@PutMapping("/factures/{id}/regler")
+    public ResponseEntity<Facture> reglerFacture(@PathVariable Long id) {
+        return factureRepository.findById(id).map(facture -> {
+            facture.setReglee(true); // On marque comme réglée
+            factureRepository.save(facture);
+            return ResponseEntity.ok(facture);
+        }).orElse(ResponseEntity.notFound().build());
+    }
+	@GetMapping("/factures/reglees/{reglee}")
+	public List<Facture> getFacturesByReglee(@PathVariable Boolean reglee) {
+	    List<Facture> factures = factureRepository.findByReglee(reglee);
+	    factures.forEach(facture -> {
+	        Client client = clientServiceClient.findClientById(facture.getClientID());
+	        facture.setClient(client);
+	        facture.getFactureLines().forEach(fl -> {
+	            Produit produit = produitServiceClient.findProductById(fl.getProduitID());
+	            fl.setProduit(produit);
+	        });
+	    });
+	    return factures;
+	}
+	
 
+
+	
 }

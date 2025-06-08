@@ -9,4 +9,5 @@ import
 public interface FactureRepository extends
         JpaRepository<Facture, Long> {
 	 List<Facture> findByClientID(Long clientID);
+	 List<Facture> findByReglee(Boolean reglee);
 }
