@@ -1,15 +1,14 @@
-# Étape 1 : Builder le projet
-FROM maven:3.9.4-eclipse-temurin-17 AS builder
+# Builder
+FROM maven:3.8.6-eclipse-temurin-17 AS build
 WORKDIR /app
 COPY pom.xml .
 COPY src ./src
 RUN mvn clean package -DskipTests
 
-# Étape 2 : Image finale
-FROM eclipse-temurin:17
-WORKDIR /app
-COPY --from=builder /app/target/*.jar app.jar
+# Image finale
+FROM eclipse-temurin:17-jre
 
-EXPOSE 8083
 
-ENTRYPOINT ["java", "-jar", "app.jar"]
+COPY --from=build /app/target/factureservice-0.0.1-SNAPSHOT.jar ./factureservice.jar
+
+ENTRYPOINT ["java","-jar","/factureservice.jar"]

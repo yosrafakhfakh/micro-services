@@ -1,76 +1,167 @@
+version: "2.1"
 
 services:
+
   config-service:
     build: ./config-service
+    container_name: config-server
     ports:
       - "5555:5555"
     volumes:
-      - ${HOME}/cloud-conf:/root/cloud-conf
+      - C:/Users/yosra/cloud-conf:/config-repo
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+      - SPRING_CLOUD_CONFIG_SERVER_NATIVE_SEARCH_LOCATIONS=file:/config-repo
     networks:
-      - spring-network
+      - ms-net
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5555/actuator/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
   eureka-discoveryservice:
     build: ./eureka-discoveryservice
+    container_name: eureka-server
     ports:
-      - "8761:8080"
-    volumes:
-      - ${HOME}/cloud-conf:/root/cloud-conf
+      - "8761:8761"
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+      - EUREKA_SERVER_PORT=8761
+      - SPRING_CLOUD_CONFIG_URI=http://config-server:5555
+    depends_on:
+      config-service:
+        condition: service_healthy
     networks:
-      - spring-network
+      - ms-net
+    extra_hosts:
+      - "localhost:host-gateway"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8761/actuator/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   gatewayservice:
     build: ./gatewayservice
+    container_name: gateway-service
     ports:
-      - "8888:8080"
-    volumes:
-      - ${HOME}/cloud-conf:/root/cloud-conf
+      - "8888:8888"
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+      - SPRING_CLOUD_CONFIG_URI=http://config-server:5555
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka-server:8761/eureka/
+    depends_on:
+      config-service:
+        condition: service_healthy
+      eureka-discoveryservice:
+        condition: service_healthy
     networks:
-      - spring-network 
+      - ms-net
+    extra_hosts:
+      - "localhost:host-gateway"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8888/actuator/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   produit-service:
     build: ./produit-service
+    container_name: produit-service
     ports:
-      - "8082:8080"
-    volumes:
-      - ${HOME}/cloud-conf:/root/cloud-conf
+      - "8082:8082"
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+      - SPRING_CLOUD_CONFIG_URI=http://config-server:5555
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka-server:8761/eureka/
+    depends_on:
+      config-service:
+        condition: service_healthy
+      eureka-discoveryservice:
+        condition: service_healthy
     networks:
-      - spring-network
+      - ms-net
+    extra_hosts:
+      - "localhost:host-gateway"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8082/actuator/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   client-service:
     build: ./client-service
+    container_name: client-service
     ports:
-      - "8081:8080"
-    volumes:
-      - ${HOME}/cloud-conf:/root/cloud-conf
+      - "8081:8081"
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+      - SPRING_CLOUD_CONFIG_URI=http://config-server:5555
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka-server:8761/eureka/
+    depends_on:
+      config-service:
+        condition: service_healthy
+      eureka-discoveryservice:
+        condition: service_healthy
     networks:
-      - spring-network
-  
+      - ms-net
+    extra_hosts:
+      - "localhost:host-gateway"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8081/actuator/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
   factureservice:
     build: ./factureservice
+    container_name: facture-service
     ports:
-      - "8083:8080"
-    volumes:
-      - ${HOME}/cloud-conf:/root/cloud-conf
+      - "8083:8083"
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+      - SPRING_CLOUD_CONFIG_URI=http://config-server:5555
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka-server:8761/eureka/
+    depends_on:
+      config-service:
+        condition: service_healthy
+      eureka-discoveryservice:
+        condition: service_healthy
     networks:
-      - spring-network
+      - ms-net
+    extra_hosts:
+      - "localhost:host-gateway"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8083/actuator/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   reglement-service:
     build: ./reglement-service
+    container_name: reglement-service
     ports:
-      - "8084:8080"
-    volumes:
-      - ${HOME}/cloud-conf:/root/cloud-conf
+      - "8084:8084"
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+      - SPRING_CLOUD_CONFIG_URI=http://config-server:5555
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka-server:8761/eureka/
+    depends_on:
+      config-service:
+        condition: service_healthy
+      eureka-discoveryservice:
+        condition: service_healthy
     networks:
-      - spring-network
+      - ms-net
+    extra_hosts:
+      - "localhost:host-gateway"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8084/actuator/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
-  authentificationservice:
-    build: ./authentificationservice
-    ports:
-      - "8089:8080"
-    volumes:
-      - ${HOME}/cloud-conf:/root/cloud-conf
-    networks:
-      - spring-network
-  
 networks:
-  spring-network:
+  ms-net:
     driver: bridge

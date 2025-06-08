@@ -10,6 +10,7 @@ import org.ms.facture_service.repository.FactureRepository;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
+import java.util.List;
 
 @RestController
 public class FactureRestController {
@@ -29,6 +30,10 @@ public class FactureRestController {
 	  @GetMapping(path = "/factures")
 	    public List<Facture> getAllFactures() {
 	        return factureRepository.findAll();
+	    }
+	  @GetMapping("/")
+	    public String home() {
+	        return "Bienvenue sur le service de facture";
 	    }
 
 	@GetMapping(path = "/full-facture/{id}")

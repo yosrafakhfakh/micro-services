@@ -26,4 +26,8 @@ public class ProduitRestController {
 		params.put("threadName", Thread.currentThread().toString());
 		return params;
 	}
+	 @GetMapping("/")
+	    public String home() {
+	        return "Bienvenue sur le service de produit ";
+	    }
 }

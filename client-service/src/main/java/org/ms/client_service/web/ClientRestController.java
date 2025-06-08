@@ -45,6 +45,10 @@ public class ClientRestController {
 	public Client getOne(@PathVariable Long id) {
 		return clientRepository.findById(id).get();
 	}
+	 @GetMapping("/")
+	    public String home() {
+	        return "Bienvenue sur le service de client";
+	    }
 
 	@PostMapping(path = "/clients")
 	public Client save(@RequestBody Client client) {

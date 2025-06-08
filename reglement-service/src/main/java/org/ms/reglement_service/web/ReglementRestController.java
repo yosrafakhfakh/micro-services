@@ -23,6 +23,10 @@ public class ReglementRestController {
     public List<Reglement> getAllReglements() {
         return reglementService.getAllReglements();
     }
+    @GetMapping("/")
+    public String home() {
+        return "Bienvenue sur le service de réglement";
+    }
 
     @GetMapping("/{id}")
     public Reglement getReglementById(@PathVariable Long id) {
