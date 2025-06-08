@@ -1,4 +1,6 @@
 package org.ms.facture_service.repository;
+import java.util.List;
+
 import org.ms.facture_service.entities.Facture;
 import org.springframework.data.jpa.repository.JpaRepository;
 import
@@ -6,4 +8,5 @@ import
 @RepositoryRestController
 public interface FactureRepository extends
         JpaRepository<Facture, Long> {
+	 List<Facture> findByClientID(Long clientID);
 }

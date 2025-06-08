@@ -47,4 +47,20 @@ public class FactureRestController {
 		});
 		return facture;
 	}
+	@GetMapping("/factures/user/{clientId}")
+	public List<Facture> getFacturesByClient(@PathVariable Long clientId) {
+	    List<Facture> factures = factureRepository.findByClientID(clientId);
+	    factures.forEach(facture -> {
+	        // Charger le client
+	        Client client = clientServiceClient.findClientById(facture.getClientID());
+	        facture.setClient(client);
+	        // Charger les produits de chaque ligne de facture
+	        facture.getFactureLines().forEach(fl -> {
+	            Produit produit = produitServiceClient.findProductById(fl.getProduitID());
+	            fl.setProduit(produit);
+	        });
+	    });
+	    return factures;
+	}
+
 }
